@@ -55,7 +55,10 @@ module "kms-sops" {
     }
 }
 ```
+<br>
+
 ### Terragrunt Example
+
 ```
 terraform {
   source = "ashero/kms/aws"

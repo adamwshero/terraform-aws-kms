@@ -4,7 +4,7 @@ data "aws_iam_roles" "roles" {
 }
 
 module "kms-sops" {
-  source              = "ashero/kms/aws"
+  source              = "adamwshero/kms/aws"
   alias               = "alias/devops-sops"
   description         = "DevOps CMK for SOPS use."
   enable_key_rotation = false

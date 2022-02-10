@@ -10,7 +10,7 @@ include {
 }
 
 terraform {
-  source = "ashero/kms/aws"
+  source = "adamwshero/kms/aws"
 }
 
 inputs = {

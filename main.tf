@@ -1,6 +1,9 @@
 resource "aws_kms_key" "key" {
   description             = var.description
   deletion_window_in_days = var.deletion_window_in_days
+  enable_key_rotation     = var.enable_key_rotation
+  key_usage               = var.key_usage
+  multi_region            = var.multi_region
   policy                  = var.policy
   tags                    = var.tags
   lifecycle {

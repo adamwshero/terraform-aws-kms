@@ -8,8 +8,8 @@ variable "alias" {
 }
 variable "deletion_window_in_days" {
   description = "Number of days to wait before deletion."
-  type        = string
-  default     = "7"
+  type        = number
+  default     = 7
 }
 variable "description" {
   description = "A useful description for the KMS key."
@@ -18,6 +18,16 @@ variable "description" {
 }
 variable "enable_key_rotation" {
   description = "Enables or disables key rotation."
+  type        = bool
+  default     = false
+}
+variable "key_usage" {
+  description = "Sets the intended use of the key."
+  type        = string
+  default     = "ENCRYPT_DECRYPT"
+}
+variable "multi_region" {
+  description = "Indicates whether the KMS key is a multi-Region or regional."
   type        = bool
   default     = false
 }

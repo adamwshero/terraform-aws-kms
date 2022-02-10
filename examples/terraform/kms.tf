@@ -4,11 +4,14 @@ data "aws_iam_roles" "roles" {
 }
 
 module "kms-sops" {
-  source              = "adamwshero/kms/aws"
-  alias               = "alias/devops-sops"
-  description         = "DevOps CMK for SOPS use."
-  enable_key_rotation = false
-  sops_file           = "${path.root}/db-credentials/kms.sops.yaml"
+  source                  = "adamwshero/kms/aws"
+  alias                   = "alias/devops-sops"
+  description             = "DevOps CMK for SOPS use."
+  deletion_window_in_days = 7
+  enable_key_rotation     = false
+  key_usage               = "ENCRYPT_DECRYPT"
+  multi_region            = false
+  sops_file               = "${path.root}/db-credentials/kms.sops.yaml"
   policy = jsonencode(
     {
       "Version" : "2012-10-17",

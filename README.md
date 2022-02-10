@@ -128,6 +128,7 @@ inputs = {
 | Local SOPS File     | `sops_file`          | String      |
 | Policy              | `policy`             | map(string) |
 | Tags                | `tags`               | map(string) |
+
 <br>
 <br>
 

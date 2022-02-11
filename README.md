@@ -14,7 +14,7 @@ Terraform module to create Amazon Customer Managed Key (CMK) for use with [Mozil
 
 ## Examples
 
-Look at our [examples](examples/) where you can get a better context of usage for both Terraform and Terragrunt.
+Look at our [Terraform example](latest/examples/terraform/) where you can get a better context of usage for both Terraform. The Terragrunt example can be viewed directly from GitHub.
 
 
 ## Usage

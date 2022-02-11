@@ -2,8 +2,8 @@
 
 ENHANCEMENT:
 
-  * Add example link for Terragrunt.
-  
+  * Fix links for examples.
+
 ## 1.0.5 (February 10, 2022)
 
 ENHANCEMENT:

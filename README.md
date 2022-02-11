@@ -65,7 +65,7 @@ module "kms-sops" {
 
 ```
 terraform {
-  source = "git@github.com:adamwshero/terraform-aws-kms.git//?ref=1.0.6"
+  source = "git@github.com:adamwshero/terraform-aws-kms.git//?ref=1.0.7"
 }
 
 inputs = {

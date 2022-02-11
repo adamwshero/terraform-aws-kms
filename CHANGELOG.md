@@ -1,3 +1,9 @@
+## 1.0.4 (February 10, 2022)
+
+ENHANCEMENT:
+
+  * Add latest tag badge to readme.
+
 ## 1.0.3 (February 10, 2022)
 
 ENHANCEMENT:

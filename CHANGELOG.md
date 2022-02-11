@@ -1,3 +1,9 @@
+## 1.0.7 (February 10, 2022)
+
+ENHANCEMENT:
+
+  * Improved Terraform & Terragrunt examples.
+
 ## 1.0.6 (February 10, 2022)
 
 ENHANCEMENT:

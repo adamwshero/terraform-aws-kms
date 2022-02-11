@@ -10,22 +10,16 @@
 
 Terraform module to create Amazon Customer Managed Key (CMK) for use with [Mozilla SOPS](https://github.com/mozilla/sops).
 
-AWS Key Management Service (KMS) makes it easy for you to create and manage cryptographic keys and control their use across a wide range of AWS services and in your applications. AWS KMS is a secure and resilient service that uses hardware security modules that have been validated under FIPS 140-2, or are in the process of being validated, to protect your keys. AWS KMS is integrated with AWS CloudTrail to provide you with logs of all key usage to help meet your regulatory and compliance needs.
-<br>
-<br>
+[Amazon Key Management Service (KMS)](https://aws.amazon.com/kms/) makes it easy for you to create and manage cryptographic keys and control their use across a wide range of AWS services and in your applications. AWS KMS is a secure and resilient service that uses hardware security modules that have been validated under FIPS 140-2, or are in the process of being validated, to protect your keys. AWS KMS is integrated with AWS CloudTrail to provide you with logs of all key usage to help meet your regulatory and compliance needs.
 
 ## Examples
 
 Check the [examples](/examples/) folder where you can see the complete compilation of snippets.
-<br>
-<br>
+
 
 ## Usage
 
 You can create a customer managed key (CMK) for use with the [Mozilla SOPS](https://github.com/mozilla/sops) tool. The module will output a kms-sops.yaml for you to use with the SOPS tool for encrypting and decrypting files.
-<br>
-<br>
-
 
 ### Terraform Example
 
@@ -65,7 +59,6 @@ module "kms-sops" {
     }
 }
 ```
-<br>
 
 ### Terragrunt Example
 
@@ -111,25 +104,17 @@ inputs = {
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.14.0 
 | <a name="requirement_terragrunt"></a> [terragrunt](#requirement\_terragrunt) | >= 0.28.0 |
 
-<br>
-
-
 ## Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 2.67.0 |
 
-<br>
-
 ## Resources
 
 | Name | Type |
 |------|------|
 | [aws_ksm_key.rsm](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
-
-<br>
-
 
 ## Available Inputs
 
@@ -144,10 +129,6 @@ inputs = {
 | Multi-Region        | `multi_region`            | bool        |
 | Policy              | `policy`                  | map(string) |
 | Tags                | `tags`                    | map(string) |
-
-<br>
-<br>
-
 
 ## Outputs
 

@@ -1,10 +1,13 @@
-data "aws_iam_roles" "roles" {
+# Complete Plan Example
+
+```data "aws_iam_roles" "roles" {
   name_regex  = "AWSReservedSSO_AWSAdministratorAccess_.*"
   path_prefix = "/aws-reserved/sso.amazonaws.com/"
 }
 
 module "kms-sops" {
   source                  = "adamwshero/kms/aws"
+  version                 = "~> 1.0.7"
   alias                   = "alias/devops-sops"
   description             = "DevOps CMK for SOPS use."
   deletion_window_in_days = 7
@@ -34,3 +37,4 @@ module "kms-sops" {
     CreatedByTerraform = true
   }
 }
+```

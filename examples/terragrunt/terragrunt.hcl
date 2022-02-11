@@ -1,33 +1,39 @@
+
 locals {
-  account   = "123456789"
-  region    = "us-east-1"
-  env       = "dev"
-  sso_admin = "arn:aws:iam::{accountid}:role/my_trusted_role"
+  aws_region               = "us-east-1"
+  account_id               = "123456879"
+  environment              = "dev"
+  tf_state_bucket_name     = "${local.org_prefix}-tfstate-${local.project}"
+  tf_state_key_prefix      = "tf-state-${local.project}"
+  tf_state_lock_table_name = "tf-state-${local.project}-locks"
+  org_prefix               = "contoso"
+  org_tld                  = "contoso.com"
+
 }
 
-include {
-  path = find_in_parent_folders()
+## WS provider block
+generate "provider" {
+  path      = "provider.tf"
+  if_exists = "overwrite_terragrunt"
+  contents  = <<PROVIDER
+provider "aws" {
+  region = "${local.aws_region}"
+  allowed_account_ids = ["${local.account_id}"]
+}
+PROVIDER
 }
 
-terraform {
-  source = "adamwshero/kms/aws"
-}
-
-inputs = {
-  alias                   = "alias/devops-sops"
-  description             = "DevOps CMK for SOPS use."
-  deletion_window_in_days = 7
-  enable_key_rotation     = false
-  key_usage               = "ENCRYPT_DECRYPT"
-  multi_region            = false
-  sops_file               = "${get_terragrunt_dir()}/.sops.yaml"
-
-  policy = templatefile("${get_terragrunt_dir()}/kms-policy.json.tpl", {
-    sso_admin = local.sso_admin
-  })
-  tags = {
-    Environment        = local.env
-    Owner              = "DevOps"
-    CreatedByTerraform = true
+remote_state {
+  backend = "s3"
+  config = {
+    bucket         = local.tf_state_bucket_name
+    key            = "${path_relative_to_include()}/terraform.tfstate"
+    region         = local.aws_region
+    dynamodb_table = local.tf_state_lock_table_name
+    encrypt        = true
+  }
+  generate = {
+    path      = "backend.tf"
+    if_exists = "overwrite_terragrunt"
   }
 }

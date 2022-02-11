@@ -14,7 +14,7 @@ Terraform module to create Amazon Customer Managed Key (CMK) for use with [Mozil
 
 ## Examples
 
-Check out the [Terraform example](https://github.com/adamwshero/terraform-aws-kms/tree/main/examples/terraform) or the [Terragrunt example](https://github.com/adamwshero/terraform-aws-kms/tree/main/examples/terragrunt) where you can get a better context of usage.
+Look at our [examples](examples/) where you can get a better context of usage for both Terraform and Terragrunt.
 
 
 ## Usage
@@ -27,6 +27,7 @@ You can create a customer managed key (CMK) for use with the [Mozilla SOPS](http
 module "kms-sops" {
 
     source = "adamwshero/kms/aws"
+    version = "~> 1.0.7"
 
     alias                   = "alias/devops-sops"
     description             = "DevOps CMK for SOPS use."
@@ -64,7 +65,7 @@ module "kms-sops" {
 
 ```
 terraform {
-  source = "adamwshero/kms/aws"
+  source = "git@github.com:adamwshero/terraform-aws-kms.git//?ref=1.0.6"
 }
 
 inputs = {

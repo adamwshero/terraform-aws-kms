@@ -14,7 +14,7 @@ Terraform module to create Amazon Customer Managed Key (CMK) for use with [Mozil
 
 ## Examples
 
-Check out the [Terraform example](/examples/terraform/kms.tf) or the [Terragrunt example](/examples/terragrunt/terragrunt.hcl) where you can get a better context of usage.
+Check out the [Terraform example](https://github.com/adamwshero/terraform-aws-kms/tree/main/examples/terraform) or the [Terragrunt example](https://github.com/adamwshero/terraform-aws-kms/tree/main/examples/terragrunt) where you can get a better context of usage.
 
 
 ## Usage

@@ -1,4 +1,10 @@
-## 1.0.7 (February 10, 2022)
+## 1.0.8 (February 11, 2022)
+
+ENHANCEMENT:
+
+  * Improved readme links to examples.
+
+## 1.0.7 (February 11, 2022)
 
 ENHANCEMENT:
 

@@ -1,3 +1,9 @@
+## 1.0.9 (February 24, 2022)
+
+CHORE:
+
+  * Using best practices with resource aliases.
+
 ## 1.0.8 (February 11, 2022)
 
 ENHANCEMENT:
@@ -12,7 +18,7 @@ ENHANCEMENT:
 
 ## 1.0.6 (February 10, 2022)
 
-ENHANCEMENT:
+CHORE:
 
   * Fix links for examples.
 

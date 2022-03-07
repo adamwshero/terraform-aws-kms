@@ -131,7 +131,7 @@ inputs = {
 | Deletion Window     | `deletion_window_in_days`  | number      |
 | Enable Key Rotation | `enable_key_rotation`      | bool        |
 | Key Usage           | `key_usage`                | string      |
-| Key Spec            | `customer_managed_key_spec`| string      |
+| Key Spec            | `customer_master_key_spec`| string      |
 | Local SOPS File     | `sops_file`                | string      |
 | Multi-Region        | `multi_region`             | bool        |
 | Policy              | `policy`                   | map(string) |

@@ -12,7 +12,7 @@ module "kms-sops" {
   enable_key_rotation     = false
   key_usage               = "ENCRYPT_DECRYPT"
   multi_region            = false
-  sops_file               = "${path.root}/db-credentials/kms.sops.yaml"
+  sops_file               = "${path.root}/path-to-file/cmk.sops.yaml"
   policy = jsonencode(
     {
       "Version" : "2012-10-17",

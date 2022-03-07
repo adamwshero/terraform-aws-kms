@@ -1,3 +1,18 @@
+## 1.1.0 (March 7, 2022)
+
+BREAK/FIX:
+
+  * Added 'type' for tag to be map(string)
+
+ENHANCEMENT:
+
+  * Added customer_master_key_spec input.
+
+CHORE:
+
+  * Updated readme to be more descriptive.
+  * Updated examples.
+
 ## 1.0.9 (February 24, 2022)
 
 CHORE:

@@ -19,7 +19,7 @@ Look at our [Terraform example](latest/examples/terraform/) where you can get a 
 
 ## Usage
 
-You can create a customer managed key (CMK) for use with the [Mozilla SOPS](https://github.com/mozilla/sops) tool. The module will output a kms-sops.yaml for you to use with the SOPS tool for encrypting and decrypting files.
+You can create a customer managed key (CMK) for use with the [Mozilla SOPS](https://github.com/mozilla/sops) tool. The module will create the CMK and also create a kms-sops.yaml for you to use with the SOPS tool for encrypting and decrypting files.
 
 ### Terraform Example
 

@@ -13,17 +13,18 @@ include {
 }
 
 terraform {
-  source = "git@github.com:adamwshero/terraform-aws-kms.git//?ref=1.0.7"
+  source = "git@github.com:adamwshero/terraform-aws-kms.git//?ref=1.1.0"
 }
 
 inputs = {
-  alias                   = "alias/devops-sops"
-  description             = "DevOps CMK for SOPS use."
-  deletion_window_in_days = 7
-  enable_key_rotation     = false
-  key_usage               = "ENCRYPT_DECRYPT"
-  multi_region            = false
-  sops_file               = "${get_terragrunt_dir()}/.sops.yaml"
+  alias                    = "alias/devops-sops"
+  description              = "DevOps CMK for SOPS use."
+  deletion_window_in_days  = 7
+  enable_key_rotation      = false
+  key_usage                = "ENCRYPT_DECRYPT"
+  customer_master_key_spec = "SYMMETRIC_DEFAULT"
+  multi_region             = false
+  sops_file                = "${get_terragrunt_dir()}/.sops.yaml"
 
   policy = templatefile("${get_terragrunt_dir()}/kms-policy.json.tpl", {
     sso_admin = local.sso_admin

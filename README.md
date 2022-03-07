@@ -29,13 +29,14 @@ module "kms-sops" {
     source = "adamwshero/kms/aws"
     version = "~> 1.1.0"
 
-    alias                   = "alias/devops-sops"
-    description             = "DevOps CMK for SOPS use."
-    deletion_window_in_days = 7
-    enable_key_rotation     = false
-    key_usage               = "ENCRYPT_DECRYPT"
-    multi_region            = false
-    sops_file               = "${path.root}/path-to-file/kms.sops.yaml"
+    alias                    = "alias/devops-sops"
+    description              = "DevOps CMK for SOPS use."
+    deletion_window_in_days  = 7
+    enable_key_rotation      = false
+    key_usage                = "ENCRYPT_DECRYPT"
+    customer_master_key_spec = "SYMMETRIC_DEFAULT"
+    multi_region             = false
+    sops_file                = "${path.root}/path-to-file/kms.sops.yaml"
     policy = jsonencode(
         {
         "Version" : "2012-10-17",
@@ -123,17 +124,18 @@ inputs = {
 
 ## Available Inputs
 
-| KMS Property        | Variable                  | Data Type   |
-| --------------------| --------------------------| ------------|
-| Alias               | `alias`                   | String      |
-| Description         | `description`             | String      |
-| Deletion Window     | `deletion_window_in_days` | Number      |
-| Enable Key Rotation | `enable_key_rotation`     | bool        |
-| Key Usage           | `key_usage`               | string      |
-| Local SOPS File     | `sops_file`               | String      |
-| Multi-Region        | `multi_region`            | bool        |
-| Policy              | `policy`                  | map(string) |
-| Tags                | `tags`                    | map(string) |
+| KMS Property        | Variable                   | Data Type   |
+| --------------------| ---------------------------| ------------|
+| Alias               | `alias`                    | String      |
+| Description         | `description`              | String      |
+| Deletion Window     | `deletion_window_in_days`  | number      |
+| Enable Key Rotation | `enable_key_rotation`      | bool        |
+| Key Usage           | `key_usage`                | string      |
+| Key Spec            | `customer_managed_key_spec`| string      |
+| Local SOPS File     | `sops_file`                | string      |
+| Multi-Region        | `multi_region`             | bool        |
+| Policy              | `policy`                   | map(string) |
+| Tags                | `tags`                     | map(string) |
 
 ## Outputs
 

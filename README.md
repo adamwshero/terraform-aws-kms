@@ -27,7 +27,7 @@ You can create a customer managed key (CMK) for use with the [Mozilla SOPS](http
 module "kms-sops" {
 
     source = "adamwshero/kms/aws"
-    version = "~> 1.0.7"
+    version = "~> 1.1.0"
 
     alias                   = "alias/devops-sops"
     description             = "DevOps CMK for SOPS use."
@@ -65,7 +65,7 @@ module "kms-sops" {
 
 ```
 terraform {
-  source = "git@github.com:adamwshero/terraform-aws-kms.git//?ref=1.0.7"
+  source = "git@github.com:adamwshero/terraform-aws-kms.git//?ref=1.1.0"
 }
 
 inputs = {

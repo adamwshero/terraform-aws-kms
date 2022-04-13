@@ -1,3 +1,11 @@
+## 1.1.1 (April 13, 2022)
+
+CHORE:
+
+  * Improved input table in README.
+  * Set a data type for the policy variable.
+  * Added sops_file provider documentation in README
+
 ## 1.1.0 (March 7, 2022)
 
 BREAK/FIX:

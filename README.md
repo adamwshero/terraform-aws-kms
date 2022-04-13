@@ -29,7 +29,7 @@ You can create a customer managed key (CMK) for use with the [Mozilla SOPS](http
 module "kms-sops" {
 
     source = "adamwshero/kms/aws"
-    version = "~> 1.1.0"
+    version = "~> 1.1.1"
 
     alias                    = "alias/devops-sops"
     description              = "DevOps CMK for SOPS use."
@@ -79,7 +79,7 @@ include {
 }
 
 terraform {
-  source = "git@github.com:adamwshero/terraform-aws-kms.git//?ref=1.1.0"
+  source = "git@github.com:adamwshero/terraform-aws-kms.git//?ref=1.1.1"
 }
 
 inputs = {
@@ -123,21 +123,23 @@ inputs = {
 | Name | Type |
 |------|------|
 | [aws_ksm_key.rsm](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
+| [sops_file.rsm](https://registry.terraform.io/providers/carlpett/sops/latest/docs/data-sources/file) | resource |
+
 
 ## Available Inputs
 
-| KMS Property        | Variable                   | Data Type   |
-| --------------------| ---------------------------| ------------|
-| Alias               | `alias`                    | String      |
-| Description         | `description`              | String      |
-| Deletion Window     | `deletion_window_in_days`  | number      |
-| Enable Key Rotation | `enable_key_rotation`      | bool        |
-| Key Usage           | `key_usage`                | string      |
-| Key Spec            | `customer_master_key_spec`| string      |
-| Local SOPS File     | `sops_file`                | string      |
-| Multi-Region        | `multi_region`             | bool        |
-| Policy              | `policy`                   | map(string) |
-| Tags                | `tags`                     | map(string) |
+| Name                | Resource    |  Variable                  | Data Type    | Default             | Required?
+| --------------------| ------------|----------------------------| -------------|---------------------|----------
+| Alias               | aws_kms_key | `alias`                    | `string`     | `""`                | No
+| Description         | aws_kms_key | `description`              | `string`     | `""`                | No
+| Deletion Window     | aws_kms_key | `deletion_window_in_days`  | `number`     | `7`                 | No
+| Enable Key Rotation | aws_kms_key | `enable_key_rotation`      | `bool`       | `false`             | No
+| Key Usage           | aws_kms_key | `key_usage`                | `string`     | `ENCRYPT_DECRYPT`   | No
+| Key Spec            | aws_kms_key | `customer_master_key_spec` | `string`     | `SYMMETRIC_DEFAULT` | No
+| Multi-Region        | aws_kms_key | `multi_region`             | `bool`       | `false`             | No
+| Policy              | aws_kms_key | `policy`                   | `string`     | `""`                | No
+| Tags                | aws_kms_key | `tags`                     | `map(string)`| `""`                | No
+| Local SOPS File     | sops_file   | `sops_file`                | `string`     | `""`                | Yes
 
 ## Outputs
 

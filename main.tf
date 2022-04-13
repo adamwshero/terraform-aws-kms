@@ -11,6 +11,7 @@ resource "aws_kms_key" "this" {
     prevent_destroy = true
   }
 }
+
 resource "aws_kms_alias" "this" {
   name          = var.alias
   target_key_id = aws_kms_key.this.key_id
@@ -18,6 +19,7 @@ resource "aws_kms_alias" "this" {
     prevent_destroy = true
   }
 }
+
 resource "local_file" "this" {
   content         = <<EOF
 creation_rules:

@@ -23,13 +23,13 @@ Look at our [Terraform example](latest/examples/terraform/) where you can get a 
 
 You can create a customer managed key (CMK) for use with the [Mozilla SOPS](https://github.com/mozilla/sops) tool. The module will create the CMK and gives you an option to also create a kms-sops.yaml for you to use with the SOPS tool for encrypting and decrypting files.
 
-### Terraform Example with custom KMS Policy (optional)
+### Terraform Example with optional KMS key and lifecycle policy.
 
 ```
 module "kms-sops" {
 
     source = "adamwshero/kms/aws"
-    version = "~> 1.1.2"
+    version = "~> 1.1.3"
 
     alias                    = "alias/devops-sops"
     description              = "DevOps CMK for SOPS use."
@@ -40,6 +40,11 @@ module "kms-sops" {
     multi_region             = false
     sops_file                = "${path.root}/path-to-file/kms.sops.yaml"
     enable_sops              = true
+
+    lifecycle = {
+      prevent_destroy = true
+    }
+
     policy = jsonencode(
         {
         "Version" : "2012-10-17",
@@ -65,7 +70,7 @@ module "kms-sops" {
 }
 ```
 
-### Terragrunt Example with Custom KMS Policy (optional)
+### Terragrunt Example with optional KMS key and lifecycle policy.
 
 ```
 locals {
@@ -80,7 +85,7 @@ include {
 }
 
 terraform {
-  source = "git@github.com:adamwshero/terraform-aws-kms.git//?ref=1.1.2"
+  source = "git@github.com:adamwshero/terraform-aws-kms.git//?ref=1.1.3"
 }
 
 inputs = {
@@ -93,6 +98,10 @@ inputs = {
   multi_region             = false
   sops_file                = "${get_terragrunt_dir()}/.sops.yaml"
   enable_sops              = true
+
+  lifecycle = {
+    prevent_destroy = true
+  }
 
   policy = templatefile("${get_terragrunt_dir()}/kms-policy.json.tpl", {
     sso_admin = local.sso_admin

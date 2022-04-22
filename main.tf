@@ -7,17 +7,11 @@ resource "aws_kms_key" "this" {
   multi_region             = var.multi_region
   policy                   = var.policy
   tags                     = var.tags
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 resource "aws_kms_alias" "this" {
   name          = var.name
   target_key_id = aws_kms_key.this.key_id
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 resource "local_file" "this" {

@@ -1,3 +1,9 @@
+## 1.1.3 (April 22, 2022)
+
+BUG:
+
+  * Removed lifecycle policy for alias and key as there is no way to paramaterize [this "known limitation" with Terraform. (Issue #22544)](https://github.com/hashicorp/terraform/issues/22544). User can set this outside of the module. (see examples)
+
 ## 1.1.2 (April 22, 2022)
 
 BUG:

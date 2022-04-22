@@ -27,6 +27,10 @@ inputs = {
   sops_file                = "${get_terragrunt_dir()}/.sops.yaml"
   enable_sops              = true
 
+  lifecycle = {
+    prevent_destroy = true
+  }
+
   policy = templatefile("${get_terragrunt_dir()}/kms-policy.json.tpl", {
     sso_admin = local.sso_admin
   })

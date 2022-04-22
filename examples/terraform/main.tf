@@ -15,6 +15,10 @@ module "kms-sops" {
   multi_region             = false
   sops_file                = "${path.root}/path-to-file/cmk.sops.yaml"
   enable_sops              = true
+  lifecycle = {
+    prevent_destroy = true
+  }
+
   policy = jsonencode(
     {
       "Version" : "2012-10-17",

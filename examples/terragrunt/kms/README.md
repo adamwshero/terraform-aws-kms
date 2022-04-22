@@ -13,7 +13,7 @@ include {
 }
 
 terraform {
-  source = "git@github.com:adamwshero/terraform-aws-kms.git//?ref=1.1.3"
+  source = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.1.3"
 }
 
 inputs = {

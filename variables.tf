@@ -1,15 +1,15 @@
 #################
 # KMS Alias Vars
 #################
-variable "alias" {
-  description = "The display name of the alias. The name must start with the word 'alias' followed by a forward slash (alias/)."
+variable "name" {
+  description = "(Optional) The display name of the alias. The name must start with the word 'alias' followed by a forward slash (alias/)"
   type        = string
   default     = ""
 }
 
-###########
-# KMS Vars
-###########
+###############
+# KMS Key Vars
+###############
 variable "deletion_window_in_days" {
   description = "The waiting period, specified in number of days. After the waiting period ends, AWS KMS deletes the KMS key."
   type        = number
@@ -42,7 +42,8 @@ variable "multi_region" {
 }
 variable "policy" {
   description = "A valid policy JSON document. Although this is a key policy, not an IAM policy, an aws_iam_policy_document, in the form that designates a principal, can be used."
-  type = string
+  type        = string
+  default     = ""
 }
 variable "tags" {
   description = "A map of tags to assign to the object. If configured with a provider default_tags configuration block present, tags with matching keys will overwrite those defined at the provider-level."
@@ -57,3 +58,10 @@ variable "sops_file" {
   type        = string
   default     = ""
 }
+
+variable "enable_sops" {
+  description = "Enables or disables SOPS file creation. Only creates CMK if false."
+  type        = bool
+  default     = true
+}
+

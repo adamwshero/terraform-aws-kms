@@ -13,7 +13,7 @@ include {
 }
 
 terraform {
-  source = "git@github.com:adamwshero/terraform-aws-kms.git//?ref=1.1.1"
+  source = "git@github.com:adamwshero/terraform-aws-kms.git//?ref=1.1.2"
 }
 
 inputs = {
@@ -25,6 +25,7 @@ inputs = {
   customer_master_key_spec = "SYMMETRIC_DEFAULT"
   multi_region             = false
   sops_file                = "${get_terragrunt_dir()}/.sops.yaml"
+  enable_sops              = true
 
   policy = templatefile("${get_terragrunt_dir()}/kms-policy.json.tpl", {
     sso_admin = local.sso_admin

@@ -8,7 +8,7 @@ data "aws_iam_roles" "roles" {
 
 module "kms-sops" {
   source                   = "adamwshero/kms/aws"
-  version                  = "~> 1.1.1"
+  version                  = "~> 1.1.2"
   alias                    = "alias/devops-sops"
   description              = "DevOps CMK for SOPS use."
   deletion_window_in_days  = 7
@@ -17,6 +17,7 @@ module "kms-sops" {
   customer_master_key_spec = "SYMMETRIC_DEFAULT"
   multi_region             = false
   sops_file                = "${path.root}/path-to-file/kms.sops.yaml"
+  enable_sops              = true
   policy = jsonencode(
     {
       "Version" : "2012-10-17",

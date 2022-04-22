@@ -13,7 +13,7 @@ resource "aws_kms_key" "this" {
 }
 
 resource "aws_kms_alias" "this" {
-  name          = var.alias
+  name          = var.name
   target_key_id = aws_kms_key.this.key_id
   lifecycle {
     prevent_destroy = true
@@ -25,6 +25,7 @@ resource "local_file" "this" {
 creation_rules:
   - kms: ${aws_kms_key.this.arn}
 EOF
+  count           = var.enable_sops ? 1 : 0
   filename        = var.sops_file
   file_permission = "0600"
 }

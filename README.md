@@ -10,7 +10,7 @@
 <br>
 # terraform-aws-kms
 
-Terraform module to create Amazon Customer Managed Key (CMK) for use with [Mozilla SOPS](https://github.com/mozilla/sops).
+Terraform module to create Amazon Customer Managed Key (CMK) including optional use with [Mozilla SOPS](https://github.com/mozilla/sops).
 
 [Amazon Key Management Service (KMS)](https://aws.amazon.com/kms/) makes it easy for you to create and manage cryptographic keys and control their use across a wide range of AWS services and in your applications. AWS KMS is a secure and resilient service that uses hardware security modules that have been validated under FIPS 140-2, or are in the process of being validated, to protect your keys. AWS KMS is integrated with AWS CloudTrail to provide you with logs of all key usage to help meet your regulatory and compliance needs.
 
@@ -21,15 +21,15 @@ Look at our [Terraform example](latest/examples/terraform/) where you can get a 
 
 ## Usage
 
-You can create a customer managed key (CMK) for use with the [Mozilla SOPS](https://github.com/mozilla/sops) tool. The module will create the CMK and also create a kms-sops.yaml for you to use with the SOPS tool for encrypting and decrypting files.
+You can create a customer managed key (CMK) for use with the [Mozilla SOPS](https://github.com/mozilla/sops) tool. The module will create the CMK and gives you an option to also create a kms-sops.yaml for you to use with the SOPS tool for encrypting and decrypting files.
 
-### Terraform Example
+### Terraform Example with custom KMS Policy (optional)
 
 ```
 module "kms-sops" {
 
     source = "adamwshero/kms/aws"
-    version = "~> 1.1.1"
+    version = "~> 1.1.2"
 
     alias                    = "alias/devops-sops"
     description              = "DevOps CMK for SOPS use."
@@ -39,6 +39,7 @@ module "kms-sops" {
     customer_master_key_spec = "SYMMETRIC_DEFAULT"
     multi_region             = false
     sops_file                = "${path.root}/path-to-file/kms.sops.yaml"
+    enable_sops              = true
     policy = jsonencode(
         {
         "Version" : "2012-10-17",
@@ -64,7 +65,7 @@ module "kms-sops" {
 }
 ```
 
-### Terragrunt Example
+### Terragrunt Example with Custom KMS Policy (optional)
 
 ```
 locals {
@@ -79,7 +80,7 @@ include {
 }
 
 terraform {
-  source = "git@github.com:adamwshero/terraform-aws-kms.git//?ref=1.1.1"
+  source = "git@github.com:adamwshero/terraform-aws-kms.git//?ref=1.1.2"
 }
 
 inputs = {
@@ -91,6 +92,7 @@ inputs = {
   customer_master_key_spec = "SYMMETRIC_DEFAULT"
   multi_region             = false
   sops_file                = "${get_terragrunt_dir()}/.sops.yaml"
+  enable_sops              = true
 
   policy = templatefile("${get_terragrunt_dir()}/kms-policy.json.tpl", {
     sso_admin = local.sso_admin
@@ -122,7 +124,8 @@ inputs = {
 
 | Name | Type |
 |------|------|
-| [aws_ksm_key.rsm](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
+| [aws_kms_key.rsm](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
+| [aws_kms_alias.rsm](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_alias) | resource |
 | [sops_file.rsm](https://registry.terraform.io/providers/carlpett/sops/latest/docs/data-sources/file) | resource |
 
 
@@ -130,7 +133,7 @@ inputs = {
 
 | Name                | Resource    |  Variable                  | Data Type    | Default             | Required?
 | --------------------| ------------|----------------------------| -------------|---------------------|----------
-| Alias               | aws_kms_key | `alias`                    | `string`     | `""`                | No
+| Alias               |aws_kms_alias| `alias`                    | `string`     | `""`                | No
 | Description         | aws_kms_key | `description`              | `string`     | `""`                | No
 | Deletion Window     | aws_kms_key | `deletion_window_in_days`  | `number`     | `7`                 | No
 | Enable Key Rotation | aws_kms_key | `enable_key_rotation`      | `bool`       | `false`             | No
@@ -140,6 +143,15 @@ inputs = {
 | Policy              | aws_kms_key | `policy`                   | `string`     | `""`                | No
 | Tags                | aws_kms_key | `tags`                     | `map(string)`| `""`                | No
 | Local SOPS File     | sops_file   | `sops_file`                | `string`     | `""`                | Yes
+| Enable SOPS File    | sops_file   | `enable_sops`              | `string`     | `true`              | No
+
+## Predetermined Inputs
+
+| Name                | Resource    |  Property                 | Data Type    | Default                 | Required?
+| --------------------| ------------|---------------------------| -------------|-------------------------|----------
+| Target KMS Key Id   |aws_kms_alias| `target_key_id`           | `string`     |`aws_kms_key.this.key.id`| Yes
+| SOPS File Creation  | sops_file   | `creation_rules`          | `string`     | `aws_kms_key.this.arn`  | Yes
+| SOPS File Permission| sops_file   | `file_permission`         | `string`     | `0600`                  | Yes
 
 ## Outputs
 

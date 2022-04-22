@@ -1,3 +1,17 @@
+## 1.1.2 (April 22, 2022)
+
+BUG:
+
+  * Set default for KMS policy to "" so that a default policy is created if none is provided.
+
+CHORE:
+  * Renamed aws_kms_alias property for `name` from "alias" to "name" which is less confusing.
+
+ENHANCEMENT:
+
+  * Improved input tables in README.
+  * Added option to disable/enable SOPS file creation.
+
 ## 1.1.1 (April 13, 2022)
 
 CHORE:

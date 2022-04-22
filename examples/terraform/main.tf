@@ -5,7 +5,7 @@ data "aws_iam_roles" "roles" {
 
 module "kms-sops" {
   source                   = "adamwshero/kms/aws"
-  version                  = "~> 1.1.2"
+  version                  = "~> 1.1.3"
   alias                    = "alias/devops-sops"
   description              = "DevOps CMK for SOPS use."
   deletion_window_in_days  = 7

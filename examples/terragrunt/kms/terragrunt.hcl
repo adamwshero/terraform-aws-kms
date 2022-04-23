@@ -32,8 +32,8 @@ inputs = {
   }
 
   policy = templatefile("${get_terragrunt_dir()}/policy.json.tpl", {
-    sso_admin  = local.account_vars.locals.sso_admin
-    account_id = local.account_vars.locals.account_id
+    sso_admin  = local.sso_admin
+    account_id = local.account_id
   })
   tags = {
     Environment        = local.env.locals.env

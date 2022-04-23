@@ -23,54 +23,65 @@ Look at our [Terraform example](latest/examples/terraform/) where you can get a 
 
 You can create a customer managed key (CMK) for use with the [Mozilla SOPS](https://github.com/mozilla/sops) tool. The module will create the CMK and gives you an option to also create a kms-sops.yaml for you to use with the SOPS tool for encrypting and decrypting files.
 
-### Terraform Example with optional KMS key and lifecycle policy.
+### Terraform Example with optional SOPS file and lifecycle policy.
 
 ```
 module "kms-sops" {
+  source                             = "adamwshero/kms/aws"
+  version                            = "~> 1.1.4"
+  is_enabled                         = true
+  name                               = "alias/devops"
+  description                        = "Used for managing devops-maintained encrypted data."
+  deletion_window_in_days            = 7
+  enable_key_rotation                = false
+  key_usage                          = "ENCRYPT_DECRYPT"
+  customer_master_key_spec           = "SYMMETRIC_DEFAULT"
+  bypass_policy_lockout_safety_check = false
+  multi_region                       = false
+  enable_sops                        = true
+  sops_file                          = "${get_terragrunt_dir()}/.sops.yaml"
+  prevent_destroy                    = false
 
-    source = "adamwshero/kms/aws"
-    version = "~> 1.1.3"
+  lifecycle = {
+    prevent_destroy = true
+  }
 
-    alias                    = "alias/devops-sops"
-    description              = "DevOps CMK for SOPS use."
-    deletion_window_in_days  = 7
-    enable_key_rotation      = false
-    key_usage                = "ENCRYPT_DECRYPT"
-    customer_master_key_spec = "SYMMETRIC_DEFAULT"
-    multi_region             = false
-    sops_file                = "${path.root}/path-to-file/kms.sops.yaml"
-    enable_sops              = true
-
-    lifecycle = {
-      prevent_destroy = true
-    }
-
-    policy = jsonencode(
+  policy = jsonencode(
+    {
+      "Sid" : "Enable IAM policies",
+      "Effect" : "Allow",
+      "Principal" : {
+        "AWS" : "arn:aws:iam::${account_id}:root"
+      },
+      "Action" : "kms:*",
+      "Resource" : "*"
+    },
+    {
+      "Version" : "2012-10-17",
+      "Id" : "1",
+      "Statement" : [
         {
-        "Version" : "2012-10-17",
-        "Id" : "1",
-        "Statement" : [
-            {
-            "Sid" : "GrantAccessToCMK",
-            "Effect" : "Allow",
-            "Principal" : {
-                "AWS" : "arn:aws:iam::{accountid}:role/my_trusted_role"
-            },
-            "Action" : "kms:*",
-            "Resource" : "*"
-            }
-        ]
-    })
-    tags = {
-        application              = "my-service"
-        environment              = "dev"
-        last_modified_by         = "devops.hero@company.com"
-        team_name                = "devops"
+          "Sid" : "Account Permissions",
+          "Effect" : "Allow",
+          "Principal" : {
+            "AWS" : "${data.aws_iam_roles.roles.arns}"
+          },
+          "Action" : "kms:*",
+          "Resource" : "*"
+        }
+      ]
     }
+  )
+
+  tags = {
+    Environment        = local.env
+    Owner              = "DevOps"
+    CreatedByTerraform = true
+  }
 }
 ```
 
-### Terragrunt Example with optional KMS key and lifecycle policy.
+### Terragrunt Example with optional SOPS file and lifecycle policy.
 
 ```
 locals {
@@ -85,26 +96,28 @@ include {
 }
 
 terraform {
-  source = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.1.3"
+  source = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.1.4"
 }
 
 inputs = {
-  alias                    = "alias/devops-sops"
-  description              = "DevOps CMK for SOPS use."
-  deletion_window_in_days  = 7
-  enable_key_rotation      = false
-  key_usage                = "ENCRYPT_DECRYPT"
-  customer_master_key_spec = "SYMMETRIC_DEFAULT"
-  multi_region             = false
-  sops_file                = "${get_terragrunt_dir()}/.sops.yaml"
-  enable_sops              = true
-
+  is_enabled                         = true
+  name                               = "alias/devops"
+  description                        = "Used for managing devops-maintained encrypted data."
+  deletion_window_in_days            = 7
+  enable_key_rotation                = false
+  key_usage                          = "ENCRYPT_DECRYPT"
+  customer_master_key_spec           = "SYMMETRIC_DEFAULT"
+  bypass_policy_lockout_safety_check = false
+  multi_region                       = false
+  enable_sops                        = true
+  sops_file                          = "${get_terragrunt_dir()}/.sops.yaml"
+  prevent_destroy                    = false
   lifecycle = {
     prevent_destroy = true
   }
 
-  policy = templatefile("${get_terragrunt_dir()}/kms-policy.json.tpl", {
-    sso_admin = local.sso_admin
+  policy = templatefile("${get_terragrunt_dir()}/policy.json.tpl", {
+    sso_admin = local.account_vars.locals.sso_admin
   })
   tags = {
     Environment        = local.env.locals.env

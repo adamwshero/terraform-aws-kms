@@ -1,3 +1,14 @@
+## 1.1.4 (April 23, 2022)
+
+ENHANCEMENT:
+
+  * Added support for `is_enabled` property.
+  * Added support for `bypass_policy_lockout_safety_check` property.
+
+CHORE:
+
+  * Added default KMS policy to example since removing this causes a great risk to losing access to the key [as per this support document](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html).
+
 ## 1.1.3 (April 22, 2022)
 
 BUG:

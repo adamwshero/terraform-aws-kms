@@ -3,6 +3,7 @@ locals {
   region      = read_terragrunt_config(find_in_parent_folders("terragrunt.hcl"))
   environment = read_terragrunt_config(find_in_parent_folders("terragrunt.hcl"))
   sso_admin   = "arn:aws:iam::{accountid}:role/my_trusted_role"
+  account_id  = "12345678910"
 }
 
 include {
@@ -31,7 +32,8 @@ inputs = {
   }
 
   policy = templatefile("${get_terragrunt_dir()}/policy.json.tpl", {
-    sso_admin = local.account_vars.locals.sso_admin
+    sso_admin  = local.account_vars.locals.sso_admin
+    account_id = local.account_vars.locals.account_id
   })
   tags = {
     Environment        = local.env.locals.env

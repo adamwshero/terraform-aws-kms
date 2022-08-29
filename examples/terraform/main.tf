@@ -19,7 +19,7 @@ module "kms-sops" {
   bypass_policy_lockout_safety_check = false
   multi_region                       = false
   enable_sops                        = true
-  sops_file                          = "${get_terragrunt_dir()}/.sops.yaml"
+  sops_file                          = file("${path.module}/.sops.yaml")
   prevent_destroy                    = false
   lifecycle = {
     prevent_destroy = true

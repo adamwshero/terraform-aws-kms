@@ -20,11 +20,6 @@ module "kms-sops" {
   multi_region                       = false
   enable_sops                        = true
   sops_file                          = "${get_terragrunt_dir()}/.sops.yaml"
-  prevent_destroy                    = false
-
-  lifecycle = {
-    prevent_destroy = true
-  }
 
   policy = jsonencode(
     {

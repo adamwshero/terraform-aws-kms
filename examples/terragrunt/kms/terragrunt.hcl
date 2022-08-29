@@ -26,15 +26,12 @@ inputs = {
   multi_region                       = false
   enable_sops                        = true
   sops_file                          = "${get_terragrunt_dir()}/.sops.yaml"
-  prevent_destroy                    = false
-  lifecycle = {
-    prevent_destroy = true
-  }
 
   policy = templatefile("${get_terragrunt_dir()}/policy.json.tpl", {
     sso_admin  = local.sso_admin
     account_id = local.account_id
   })
+
   tags = {
     Environment        = local.env.locals.env
     Owner              = "DevOps"

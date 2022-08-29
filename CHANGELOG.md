@@ -1,3 +1,10 @@
+## 1.1.5 (August 29, 2022)
+
+CHORE:
+
+  * Improved README
+  * Improved examples
+
 ## 1.1.4 (April 23, 2022)
 
 ENHANCEMENT:

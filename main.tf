@@ -32,7 +32,7 @@ resource "aws_kms_replica_key" "this" {
 }
 
 resource "local_file" "sops_primary" {
-  count = var.enable_sops_primary ? 1 : 0
+  count = var.enable_sops_primary ? 1 : 0 
 
   content         = <<-EOF
 creation_rules:
@@ -40,9 +40,6 @@ creation_rules:
 EOF
   filename        = var.sops_file
   file_permission = "0600"
-  depends_on = [
-    aws_kms_key.this
-  ]
 }
 
 resource "local_file" "sops_replica" {

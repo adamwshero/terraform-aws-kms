@@ -18,11 +18,7 @@ output "replica_kms_key_id" {
 }
 output "kms_primary_sops_file" {
   description = "Output of the newly created KMS SOPS file."
-  value       = <<EOF
----
-creation_rules:
-  - kms: ${aws_kms_key.this[0].arn}
-EOF
+  value       = var.enable_sops_primary ? local_file.sops_primary.content : "[INFO] Replica KMS Key Skipped."
 }
 
 output "kms_replica_sops_file" {

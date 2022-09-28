@@ -16,7 +16,16 @@ output "replica_kms_key_id" {
   description = "The key ID of the replica key. Related multi-Region keys have the same key ID."
   value       = var.replica_is_enabled ? aws_kms_replica_key.this[0].arn : "[INFO] Replica KMS Key Skipped."
 }
-output "sops_file" {
+output "kms_primary_sops_file" {
+  description = "Output of the newly created KMS SOPS file."
+  value       = <<EOF
+---
+creation_rules:
+  - kms: ${aws_kms_key.this[0].arn}
+EOF
+}
+
+output "kms_replica_sops_file" {
   description = "Output of the newly created KMS SOPS file."
   value       = <<EOF
 ---

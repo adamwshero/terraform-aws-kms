@@ -1,4 +1,6 @@
 resource "aws_kms_key" "this" {
+  count = var.is_enabled ? 1 : 0
+
   is_enabled                         = var.is_enabled
   description                        = var.description
   deletion_window_in_days            = var.deletion_window_in_days
@@ -12,21 +14,26 @@ resource "aws_kms_key" "this" {
 }
 
 resource "aws_kms_alias" "this" {
+  count = var.is_enabled ? 1 : 0
+
   name          = var.name
   target_key_id = aws_kms_key.this.key_id
 }
 
 resource "local_file" "this" {
+  count = var.enable_sops ? 1 : 0
+
   content         = <<EOF
 creation_rules:
   - kms: ${aws_kms_key.this.arn}
 EOF
-  count           = var.enable_sops ? 1 : 0
   filename        = var.sops_file
   file_permission = "0600"
 }
 
 resource "aws_kms_replica_key" "this" {
+  count = var.replica_is_enabled ? 1 : 0
+
   enabled                            = var.replica_is_enabled
   description                        = var.replica_description
   deletion_window_in_days            = var.replica_deletion_window_in_days

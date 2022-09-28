@@ -21,7 +21,7 @@ resource "aws_kms_alias" "this" {
 }
 
 resource "local_file" "this" {
-  count = var.enable_sops ? 1 : 0 && var.is_enabled ? 1 : 0
+  count = var.enable_sops ? 1 : 0
 
   content         = <<-EOF
 creation_rules:

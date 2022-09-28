@@ -25,7 +25,7 @@ resource "local_file" "this" {
 
   content         = <<EOF
 creation_rules:
-  - kms: ${aws_kms_key.this[*].arn}
+  - kms: ${aws_kms_key.this[count.index].arn}
 EOF
   filename        = var.sops_file
   file_permission = "0600"

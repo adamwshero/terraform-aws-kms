@@ -78,7 +78,13 @@ variable "sops_file" {
   default     = null
 }
 
-variable "enable_sops" {
+variable "enable_sops_replica" {
+  description = "(Optional) Enables or disables SOPS file creation. Skips creating the sops file if false."
+  type        = bool
+  default     = false
+}
+
+variable "enable_sops_primary" {
   description = "(Optional) Enables or disables SOPS file creation. Skips creating the sops file if false."
   type        = bool
   default     = false

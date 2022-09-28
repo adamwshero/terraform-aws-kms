@@ -1,17 +1,7 @@
-## Basic Terraform Example (KMS Only)
+## Basic Terraform Example (Primary KMS Only)
 
 ```
-locals {
-  account_id = "12345679810"
-}
-
-data "aws_iam_roles" "roles" {
-  name_regex  = "AWSReservedSSO_AWSAdministratorAccess_.*"
-  path_prefix = "/aws-reserved/sso.amazonaws.com/"
-}
-
-module "kms" {
-  source                             = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.1.6"
+module "primary-kms" {
   is_enabled                         = true
   name                               = "alias/devops"
   description                        = "Used for managing devops-maintained encrypted data."
@@ -20,13 +10,9 @@ module "kms" {
   key_usage                          = "ENCRYPT_DECRYPT"
   customer_master_key_spec           = "SYMMETRIC_DEFAULT"
   bypass_policy_lockout_safety_check = false
-  multi_region                       = false
-  prevent_destroy                    = false
-  lifecycle = {
-    prevent_destroy = true
-  }
+  multi_region                       = true
 
-  policy = templatefile("${path.module}/policy.json.tpl", {
+  policy = templatefile("${path.module}/kms-primary.json.tpl", {
     iam_role_arn = data.aws_iam_roles.roles.arns
     account_id   = local.account_id
   })
@@ -38,20 +24,10 @@ module "kms" {
   }
 }
 ```
-## Complete Terraform Example (KMS + SOPS)
+## Complete Terraform Example (Primary KMS + SOPS)
 
 ```
-locals {
-  account_id = "12345679810"
-}
-
-data "aws_iam_roles" "roles" {
-  name_regex  = "AWSReservedSSO_AWSAdministratorAccess_.*"
-  path_prefix = "/aws-reserved/sso.amazonaws.com/"
-}
-
-module "kms-sops" {
-  source                             = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.1.6"
+module "primary-kms-sops" {
   is_enabled                         = true
   name                               = "alias/devops"
   description                        = "Used for managing devops-maintained encrypted data."
@@ -60,20 +36,64 @@ module "kms-sops" {
   key_usage                          = "ENCRYPT_DECRYPT"
   customer_master_key_spec           = "SYMMETRIC_DEFAULT"
   bypass_policy_lockout_safety_check = false
-  multi_region                       = false
-  prevent_destroy                    = false
-  lifecycle = {
-    prevent_destroy = true
-  }
+  multi_region                       = true
 
-  policy = templatefile("${path.module}/policy.json.tpl", {
+  policy = templatefile("${path.module}/kms-primary.json.tpl", {
     iam_role_arn = data.aws_iam_roles.roles.arns
     account_id   = local.account_id
   })
 
   // SOPS Config
-  enable_sops = true
-  sops_file   = file("${path.module}/.sops.yaml")
+  enable_sops_primary = true
+  sops_file           = "${get_terragrunt_dir()}/.sops.yaml"
+
+  tags = {
+    Environment        = local.env
+    Owner              = "DevOps"
+    CreatedByTerraform = true
+  }
+}
+```
+## Basic Terraform Example (Replica KMS Only)
+
+```
+module "primary-kms-sops" {
+  replica_is_enabled                         = true
+  replica_description                        = "Used for managing devops-maintained encrypted data."
+  replica_deletion_window_in_days            = 1
+  replica_bypass_policy_lockout_safety_check = false
+  primary_key_arn                            = "arn:aws:kms:us-east-1:111111111111:key/mrk-a111a111aaaa111111111111aaa1aaaa"
+
+  replica_policy = templatefile("${path.module}/kms-replica.json.tpl", {
+    iam_role_arn = data.aws_iam_roles.roles.arns
+    account_id   = local.account_id
+  })
+
+  tags = {
+    Environment        = local.env
+    Owner              = "DevOps"
+    CreatedByTerraform = true
+  }
+}
+```
+## Complete Terraform Example (Replica KMS + SOPS)
+
+```
+module "primary-kms-sops" {
+  replica_is_enabled                         = true
+  replica_description                        = "Used for managing devops-maintained encrypted data."
+  replica_deletion_window_in_days            = 1
+  replica_bypass_policy_lockout_safety_check = false
+  primary_key_arn                            = "arn:aws:kms:us-east-1:111111111111:key/mrk-a111a111aaaa111111111111aaa1aaaa"
+
+  policy = templatefile("${path.module}/kms-replica.json.tpl", {
+    iam_role_arn = data.aws_iam_roles.roles.arns
+    account_id   = local.account_id
+  })
+
+  // SOPS Config
+  enable_sops_replica = true
+  sops_file           = "${get_terragrunt_dir()}/.sops.yaml"
 
   tags = {
     Environment        = local.env

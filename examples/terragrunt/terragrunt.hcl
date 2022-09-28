@@ -23,16 +23,16 @@ inputs = {
   key_usage                          = "ENCRYPT_DECRYPT"
   customer_master_key_spec           = "SYMMETRIC_DEFAULT"
   bypass_policy_lockout_safety_check = false
-  multi_region                       = false
+  multi_region                       = true
 
-  policy = templatefile("${get_terragrunt_dir()}/policy.json.tpl", {
+  policy = templatefile("${get_terragrunt_dir()}/kms-primary.json.tpl", {
     sso_admin  = local.sso_admin
     account_id = local.account_id
   })
 
   // SOPS Config
-  enable_sops = true
-  sops_file   = "${get_terragrunt_dir()}/.sops.yaml"
+  enable_sops_primary = true
+  sops_file           = "${get_terragrunt_dir()}/.sops.yaml"
 
   tags = {
     Environment        = local.env.locals.env

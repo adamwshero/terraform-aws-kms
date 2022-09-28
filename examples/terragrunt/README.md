@@ -1,18 +1,6 @@
-# Basic Terragrunt Example (KMS Only)
+# Basic Terragrunt Example (Primary KMS Key Only)
 
 ```
-locals {
-  account     = read_terragrunt_config(find_in_parent_folders("terragrunt.hcl"))
-  region      = read_terragrunt_config(find_in_parent_folders("terragrunt.hcl"))
-  environment = read_terragrunt_config(find_in_parent_folders("terragrunt.hcl"))
-  sso_admin   = "arn:aws:iam::{accountid}:role/my_trusted_role"
-  account_id  = "12345678910"
-}
-
-include {
-  path = find_in_parent_folders()
-}
-
 terraform {
   source = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.1.6"
 }
@@ -26,9 +14,9 @@ inputs = {
   key_usage                          = "ENCRYPT_DECRYPT"
   customer_master_key_spec           = "SYMMETRIC_DEFAULT"
   bypass_policy_lockout_safety_check = false
-  multi_region                       = false
+  multi_region                       = true
 
-  policy = templatefile("${get_terragrunt_dir()}/policy.json.tpl", {
+  policy = templatefile("${get_terragrunt_dir()}/kms-primary.json.tpl", {
     sso_admin  = local.sso_admin
     account_id = local.account_id
   })
@@ -40,20 +28,8 @@ inputs = {
   }
 }
 ```
-## Complete Terragrunt Example (KMS + SOPS)
+## Complete Terragrunt Example (Primary KMS Key + SOPS)
 ```
-locals {
-  account     = read_terragrunt_config(find_in_parent_folders("terragrunt.hcl"))
-  region      = read_terragrunt_config(find_in_parent_folders("terragrunt.hcl"))
-  environment = read_terragrunt_config(find_in_parent_folders("terragrunt.hcl"))
-  sso_admin   = "arn:aws:iam::{accountid}:role/my_trusted_role"
-  account_id  = "12345678910"
-}
-
-include {
-  path = find_in_parent_folders()
-}
-
 terraform {
   source = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.1.6"
 }
@@ -67,16 +43,70 @@ inputs = {
   key_usage                          = "ENCRYPT_DECRYPT"
   customer_master_key_spec           = "SYMMETRIC_DEFAULT"
   bypass_policy_lockout_safety_check = false
-  multi_region                       = false
+  multi_region                       = true
 
-  policy = templatefile("${get_terragrunt_dir()}/policy.json.tpl", {
+  policy = templatefile("${get_terragrunt_dir()}/kms-primary.json.tpl", {
     sso_admin  = local.sso_admin
     account_id = local.account_id
   })
 
   // SOPS Config
-  enable_sops = true
-  sops_file   = "${get_terragrunt_dir()}/.sops.yaml"
+  enable_sops_primary = true
+  sops_file           = "${get_terragrunt_dir()}/.sops.yaml"
+
+  tags = {
+    Environment        = local.env.locals.env
+    Owner              = "DevOps"
+    CreatedByTerraform = true
+  }
+}
+```
+## Basic Terragrunt Example (Replica KMS Key Only)
+```
+terraform {
+  source = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.1.6"
+}
+
+inputs = {
+  replica_is_enabled                         = true
+  replica_description                        = "Used for managing devops-maintained encrypted data."
+  replica_deletion_window_in_days            = 1
+  replica_bypass_policy_lockout_safety_check = false
+  primary_key_arn                            = "arn:aws:kms:us-east-1:111111111111:key/mrk-a111a111aaaa111111111111aaa1aaaa"
+
+  replica_policy = templatefile("${get_terragrunt_dir()}/kms-replica.json.tpl", {
+    sso_admin  = local.account_vars.locals.sso_administrator_role
+    account_id = local.account_vars.locals.account_id
+  })
+
+  tags = {
+    Environment        = local.env.locals.env
+    Owner              = "DevOps"
+    CreatedByTerraform = true
+  }
+}
+```
+## Complete Terragrunt Example (Replica KMS Key + SOPS)
+```
+terraform {
+  source = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.1.6"
+}
+
+inputs = {
+  replica_is_enabled                         = true
+  replica_description                        = "Used for managing devops-maintained encrypted data."
+  replica_deletion_window_in_days            = 1
+  replica_bypass_policy_lockout_safety_check = false
+  primary_key_arn                            = "arn:aws:kms:us-east-1:111111111111:key/mrk-a111a111aaaa111111111111aaa1aaaa"
+
+  replica_policy = templatefile("${get_terragrunt_dir()}/kms-replica.json.tpl", {
+    sso_admin  = local.account_vars.locals.sso_administrator_role
+    account_id = local.account_vars.locals.account_id
+  })
+
+  // SOPS Config
+  enable_sops_replica = true
+  sops_file           = "${get_terragrunt_dir()}/.sops.yaml"
 
   tags = {
     Environment        = local.env.locals.env

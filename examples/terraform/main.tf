@@ -6,8 +6,7 @@ data "aws_iam_roles" "roles" {
   path_prefix = "/aws-reserved/sso.amazonaws.com/"
 }
 
-module "kms-sops" {
-  source                             = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.1.6"
+module "primary-kms-sops" {
   is_enabled                         = true
   name                               = "alias/devops"
   description                        = "Used for managing devops-maintained encrypted data."
@@ -16,21 +15,17 @@ module "kms-sops" {
   key_usage                          = "ENCRYPT_DECRYPT"
   customer_master_key_spec           = "SYMMETRIC_DEFAULT"
   bypass_policy_lockout_safety_check = false
-  multi_region                       = false
-  prevent_destroy                    = false
-  lifecycle = {
-    prevent_destroy = true
-  }
+  multi_region                       = true
 
-  policy = templatefile("${path.module}/policy.json.tpl", {
+  policy = templatefile("${path.module}/kms-primary.json.tpl", {
     iam_role_arn = data.aws_iam_roles.roles.arns
     account_id   = local.account_id
   })
 
   // SOPS Config
-  enable_sops = true
-  sops_file   = file("${path.module}/.sops.yaml")
-  
+  enable_sops_primary = true
+  sops_file           = "${get_terragrunt_dir()}/.sops.yaml"
+
   tags = {
     Environment        = local.env
     Owner              = "DevOps"

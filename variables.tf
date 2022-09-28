@@ -58,7 +58,7 @@ variable "multi_region" {
   default     = false
 }
 
-able "policy" {
+variable "policy" {
   description = "(Optional) A valid policy JSON document. Although this is a key policy, not an IAM policy, an aws_iam_policy_document, in the form that designates a principal, can be used. For more information about building policy documents with Terraform, see the [AWS KMS Policy Guide](https://docs.aws.amazon.com/kms/latest/developerguide/determining-access-key-policy.html)."
   type        = string
   default     = null

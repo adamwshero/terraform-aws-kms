@@ -4,7 +4,7 @@
 variable "name" {
   description = "(Optional) The display name of the alias. The name must start with the word 'alias' followed by a forward slash (alias/)"
   type        = string
-  default     = ""
+  default     = null
 }
 
 ###############
@@ -13,13 +13,13 @@ variable "name" {
 variable "is_enabled" {
   description = "(Optional) Specifies whether the key is enabled. Defaults to true."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "description" {
   description = "(Optional) The description of the key as viewed in AWS console."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "deletion_window_in_days" {
@@ -61,7 +61,7 @@ variable "multi_region" {
 able "policy" {
   description = "(Optional) A valid policy JSON document. Although this is a key policy, not an IAM policy, an aws_iam_policy_document, in the form that designates a principal, can be used. For more information about building policy documents with Terraform, see the [AWS KMS Policy Guide](https://docs.aws.amazon.com/kms/latest/developerguide/determining-access-key-policy.html)."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "tags" {
@@ -75,12 +75,50 @@ variable "tags" {
 variable "sops_file" {
   description = "(Required) name of the file and path to the encrypted file."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "enable_sops" {
-  description = "(Optional) Enables or disables SOPS file creation. Only creates CMK if false."
+  description = "(Optional) Enables or disables SOPS file creation. Skips creating the sops file if false."
   type        = bool
-  default     = true
+  default     = false
 }
 
+#######################
+# KMS Key Replica Vars
+#######################
+variable "replica_is_enabled" {
+  description = "(Optional) Specifies whether the replica key is enabled. Disabled KMS keys cannot be used in cryptographic operations. The default value is `false`."
+  type        = bool
+  default     = false
+}
+
+variable "replica_description" {
+  description = "value"
+  type        = string
+  default     = null
+}
+
+variable "replica_deletion_window_in_days" {
+  description = "(Optional) The waiting period, specified in number of days. After the waiting period ends, AWS KMS deletes the KMS key. If you specify a value, it must be between `7` and `30`, inclusive. If you do not specify a value, it defaults to `30`."
+  type        = number
+  default     = 30
+}
+
+variable "replica_bypass_policy_lockout_safety_check" {
+  description = "(Optional) A flag to indicate whether to bypass the key policy lockout safety check. Setting this value to true increases the risk that the KMS key becomes unmanageable. Do not set this value to true indiscriminately. For more information, refer to the scenario in the Default Key Policy section in the AWS Key Management Service Developer Guide. The default value is `false`."
+  type        = bool
+  default     = false
+}
+
+variable "primary_key_arn" {
+  description = "(Required) The ARN of the multi-Region primary key to replicate. The primary key must be in a different AWS Region of the same AWS Partition. You can create only one replica of a given primary key in each AWS Region."
+  type        = string
+  default     = null
+}
+
+variable "replica_policy" {
+  description = "(Optional) The key policy to attach to the KMS key. If you do not specify a key policy, AWS KMS attaches the default key policy to the KMS key. For more information about building policy documents with Terraform, see the AWS IAM Policy Document Guide."
+  type        = string
+  default     = null
+}

@@ -1,39 +1,42 @@
-
 locals {
-  aws_region               = "us-east-1"
-  account_id               = "123456879"
-  environment              = "dev"
-  tf_state_bucket_name     = "${local.org_prefix}-tfstate-${local.project}"
-  tf_state_key_prefix      = "tf-state-${local.project}"
-  tf_state_lock_table_name = "tf-state-${local.project}-locks"
-  org_prefix               = "contoso"
-  org_tld                  = "contoso.com"
-
+  account     = read_terragrunt_config(find_in_parent_folders("terragrunt.hcl"))
+  region      = read_terragrunt_config(find_in_parent_folders("terragrunt.hcl"))
+  environment = read_terragrunt_config(find_in_parent_folders("terragrunt.hcl"))
+  sso_admin   = "arn:aws:iam::{accountid}:role/my_trusted_role"
+  account_id  = "12345678910"
 }
 
-## WS provider block
-generate "provider" {
-  path      = "provider.tf"
-  if_exists = "overwrite_terragrunt"
-  contents  = <<PROVIDER
-provider "aws" {
-  region = "${local.aws_region}"
-  allowed_account_ids = ["${local.account_id}"]
-}
-PROVIDER
+include {
+  path = find_in_parent_folders()
 }
 
-remote_state {
-  backend = "s3"
-  config = {
-    bucket         = local.tf_state_bucket_name
-    key            = "${path_relative_to_include()}/terraform.tfstate"
-    region         = local.aws_region
-    dynamodb_table = local.tf_state_lock_table_name
-    encrypt        = true
-  }
-  generate = {
-    path      = "backend.tf"
-    if_exists = "overwrite_terragrunt"
+terraform {
+  source = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.1.6"
+}
+
+inputs = {
+  is_enabled                         = true
+  name                               = "alias/devops"
+  description                        = "Used for managing devops-maintained encrypted data."
+  deletion_window_in_days            = 7
+  enable_key_rotation                = false
+  key_usage                          = "ENCRYPT_DECRYPT"
+  customer_master_key_spec           = "SYMMETRIC_DEFAULT"
+  bypass_policy_lockout_safety_check = false
+  multi_region                       = false
+
+  policy = templatefile("${get_terragrunt_dir()}/policy.json.tpl", {
+    sso_admin  = local.sso_admin
+    account_id = local.account_id
+  })
+
+  // SOPS Config
+  enable_sops = true
+  sops_file   = "${get_terragrunt_dir()}/.sops.yaml"
+
+  tags = {
+    Environment        = local.env.locals.env
+    Owner              = "DevOps"
+    CreatedByTerraform = true
   }
 }

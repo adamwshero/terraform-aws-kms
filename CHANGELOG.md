@@ -1,3 +1,16 @@
+## 1.1.6 (September 28, 2022)
+
+CHORE:
+
+  * Simplified Terraform example for IAM policy
+  * Improved Terragrunt & Terraform basic and complete examples
+
+ENHANCEMENT: (BREAKING CHANGES!!)
+  * Set default for `is_enabled` to false so we can create optionally create replicas
+  * Set default for `enable_sops` to false to meet user expectations and norms around added functionality
+
+FEATURE:
+  * Now supports KMS Key Grants.
 ## 1.1.5 (August 29, 2022)
 
 CHORE:

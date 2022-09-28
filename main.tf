@@ -25,3 +25,12 @@ EOF
   filename        = var.sops_file
   file_permission = "0600"
 }
+
+resource "aws_kms_replica_key" "this" {
+  enabled                            = var.replica_is_enabled
+  description                        = var.replica_description
+  deletion_window_in_days            = var.replica_deletion_window_in_days
+  bypass_policy_lockout_safety_check = var.replica_bypass_policy_lockout_safety_check
+  primary_key_arn                    = var.primary_key_arn
+  policy                             = var.replica_policy
+}

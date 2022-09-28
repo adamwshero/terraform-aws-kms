@@ -21,6 +21,6 @@ output "sops_file" {
   value       = <<EOF
 ---
 creation_rules:
-  - kms: ${aws_kms_key.this[count.index].arn}
+  - kms: ${aws_kms_key.this[0].arn}
 EOF
 }

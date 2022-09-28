@@ -66,7 +66,7 @@ module "replica-kms" {
 
   replica_is_enabled                         = true
   replica_description                        = "Used for managing devops-maintained encrypted data."
-  replica_deletion_window_in_days            = 1
+  replica_deletion_window_in_days            = 7
   replica_bypass_policy_lockout_safety_check = false
   primary_key_arn                            = "arn:aws:kms:us-east-1:111111111111:key/mrk-a111a111aaaa111111111111aaa1aaaa"
 
@@ -90,7 +90,33 @@ module "complete-replica-kms-sops" {
 
   replica_is_enabled                         = true
   replica_description                        = "Used for managing devops-maintained encrypted data."
-  replica_deletion_window_in_days            = 1
+  replica_deletion_window_in_days            = 7
+  replica_bypass_policy_lockout_safety_check = false
+  primary_key_arn                            = "arn:aws:kms:us-east-1:111111111111:key/mrk-a111a111aaaa111111111111aaa1aaaa"
+
+  policy = templatefile("${path.module}/kms-replica.json.tpl", {
+    iam_role_arn = data.aws_iam_roles.roles.arns
+    account_id   = local.account_id
+  })
+
+  // SOPS Config
+  enable_sops_replica = true
+  sops_file           = "${get_terragrunt_dir()}/.sops.yaml"
+
+  tags = {
+    Environment        = local.env
+    Owner              = "DevOps"
+    CreatedByTerraform = true
+  }
+}
+```
+## Complete Terraform Example (Replica KMS + SOPS)
+
+```
+module "primary-kms-sops" {
+  replica_is_enabled                         = true
+  replica_description                        = "Used for managing devops-maintained encrypted data."
+  replica_deletion_window_in_days            = 7
   replica_bypass_policy_lockout_safety_check = false
   primary_key_arn                            = "arn:aws:kms:us-east-1:111111111111:key/mrk-a111a111aaaa111111111111aaa1aaaa"
 

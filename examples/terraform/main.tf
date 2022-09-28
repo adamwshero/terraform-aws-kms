@@ -7,6 +7,8 @@ data "aws_iam_roles" "roles" {
 }
 
 module "primary-kms-sops" {
+  source = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.1.6"
+
   is_enabled                         = true
   name                               = "alias/devops"
   description                        = "Used for managing devops-maintained encrypted data."

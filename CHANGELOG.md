@@ -1,3 +1,20 @@
+## 1.1.6 (September 28, 2022)
+
+CHORE:
+  * Simplified Terraform example for IAM policy
+  * Improved README
+  * Improved Terragrunt & Terraform basic and complete examples
+
+ENHANCEMENT: (BREAKING CHANGES!!)
+  * Set default for `is_enabled` to false so we can create optionally create replicas.
+  * Set default for `enable_sops` to false to meet user expectations and norms around added functionality.
+  * Renamed variable `enable_sops` to `enable_sops_primary`.
+  * Added variable `enable_sops_replica`.
+
+FEATURE:
+  * Can create a KMS Key Replica of a multi-region primary key.
+  * Can optionally incorporate SOPS file creation with either a replica or primary key.
+
 ## 1.1.5 (August 29, 2022)
 
 CHORE:

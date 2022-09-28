@@ -13,22 +13,39 @@
 Terraform module to create Amazon Customer Managed Key (CMK) including optional use with [Mozilla SOPS](https://github.com/mozilla/sops).
 
 [Amazon Key Management Service (KMS)](https://aws.amazon.com/kms/) makes it easy for you to create and manage cryptographic keys and control their use across a wide range of AWS services and in your applications. AWS KMS is a secure and resilient service that uses hardware security modules that have been validated under FIPS 140-2, or are in the process of being validated, to protect your keys. AWS KMS is integrated with AWS CloudTrail to provide you with logs of all key usage to help meet your regulatory and compliance needs.
+<br>
+
+## Module Capabilities
+- (Optional) Create a primary KMS key in either single/multi-region.
+- (Optional) Create a replica KMS key in a different region of the primary multi-region KMS key.
+- (Optional) Create a corresponding SOPS file containing the primary KMS or replica KMS arn.
+<br>
 
 ## Examples
+Look at our complete [Terraform examples](latest/examples/terraform/) where you can get a better context of usage for various scenarios. The Terragrunt example can be viewed directly from GitHub.
+<br>
 
-Look at our [Terraform example](latest/examples/terraform/) where you can get a better context of usage for both Terraform. The Terragrunt example can be viewed directly from GitHub.
-
+## Assumptions
+  * (Replica KMS Keys)
+    * The primary KMS key you initially created was created as a multi-region KMS key.
+<br>
 
 ## Usage
-
 You can create a customer managed key (CMK) for use with the [Mozilla SOPS](https://github.com/mozilla/sops) tool. The module will create the CMK and gives you an option to also create a kms-sops.yaml for you to use with the SOPS tool for encrypting and decrypting files.
+<br>
 
-### Terraform Example with optional SOPS file and lifecycle policy.
+## Special Notes
+* (Single/Multi-Region)
+  * You may create a single region KMS key but please be aware that you will not be able to create a replica of that key. Only multi-region primary KMS keys can have replicas.
+<br>
 
+## Upcoming Improvements
+* Add grant capability.
+<br>
+
+### Terraform Example with optional SOPS file.
 ```
-module "kms-sops" {
-  source                             = "adamwshero/kms/aws"
-  version                            = "~> 1.1.4"
+module "primary-kms-sops" {
   is_enabled                         = true
   name                               = "alias/devops"
   description                        = "Used for managing devops-maintained encrypted data."
@@ -37,36 +54,16 @@ module "kms-sops" {
   key_usage                          = "ENCRYPT_DECRYPT"
   customer_master_key_spec           = "SYMMETRIC_DEFAULT"
   bypass_policy_lockout_safety_check = false
-  multi_region                       = false
-  enable_sops                        = true
-  sops_file                          = file("${path.module}/.sops.yaml")
+  multi_region                       = true
 
-  policy = jsonencode(
-    {
-      "Sid" : "Enable IAM policies",
-      "Effect" : "Allow",
-      "Principal" : {
-        "AWS" : "arn:aws:iam::${account_id}:root"
-      },
-      "Action" : "kms:*",
-      "Resource" : "*"
-    },
-    {
-      "Version" : "2012-10-17",
-      "Id" : "1",
-      "Statement" : [
-        {
-          "Sid" : "Account Permissions",
-          "Effect" : "Allow",
-          "Principal" : {
-            "AWS" : "${data.aws_iam_roles.roles.arns}"
-          },
-          "Action" : "kms:*",
-          "Resource" : "*"
-        }
-      ]
-    }
-  )
+  policy = templatefile("${path.module}/kms-primary.json.tpl", {
+    iam_role_arn = data.aws_iam_roles.roles.arns
+    account_id   = local.account_id
+  })
+
+  // SOPS Config
+  enable_sops_primary = true
+  sops_file           = "${get_terragrunt_dir()}/.sops.yaml"
 
   tags = {
     Environment        = local.env
@@ -76,25 +73,9 @@ module "kms-sops" {
 }
 ```
 
-### Terragrunt Example with optional SOPS file and lifecycle policy.
+### Terragrunt Example with optional SOPS file.
 
 ```
-locals {
-  account     = read_terragrunt_config(find_in_parent_folders("terragrunt.hcl"))
-  region      = read_terragrunt_config(find_in_parent_folders("terragrunt.hcl"))
-  environment = read_terragrunt_config(find_in_parent_folders("terragrunt.hcl"))
-  sso_admin   = "arn:aws:iam::{accountid}:role/my_trusted_role"
-  account_id  = "12345679810"
-}
-
-include {
-  path = find_in_parent_folders()
-}
-
-terraform {
-  source = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.1.4"
-}
-
 inputs = {
   is_enabled                         = true
   name                               = "alias/devops"
@@ -104,14 +85,16 @@ inputs = {
   key_usage                          = "ENCRYPT_DECRYPT"
   customer_master_key_spec           = "SYMMETRIC_DEFAULT"
   bypass_policy_lockout_safety_check = false
-  multi_region                       = false
-  enable_sops                        = true
-  sops_file                          = "${get_terragrunt_dir()}/.sops.yaml"
+  multi_region                       = true
 
-  policy = templatefile("${get_terragrunt_dir()}/policy.json.tpl", {
-    sso_admin = local.sso_admin
+  policy = templatefile("${get_terragrunt_dir()}/kms-primary.json.tpl", {
+    sso_admin  = local.sso_admin
     account_id = local.account_id
   })
+
+  // SOPS Config
+  enable_sops_primary = true
+  sops_file           = "${get_terragrunt_dir()}/.sops.yaml"
 
   tags = {
     Environment        = local.env.locals.env
@@ -123,7 +106,6 @@ inputs = {
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
-
 | Name | Version |
 |------|---------|
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.67.0 |
@@ -131,38 +113,44 @@ inputs = {
 | <a name="requirement_terragrunt"></a> [terragrunt](#requirement\_terragrunt) | >= 0.28.0 |
 
 ## Providers
-
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 2.67.0 |
 
 ## Resources
-
-| Name | Type |
-|------|------|
-| [aws_kms_key.rsm](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
-| [aws_kms_alias.rsm](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_alias) | resource |
-| [sops_file.rsm](https://registry.terraform.io/providers/carlpett/sops/latest/docs/data-sources/file) | resource |
+| Name                                                                                                                   | Type     |
+| ---------------------------------------------------------------------------------------------------------------------- | -------- |
+| [aws_kms_key.rsm](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key)                 | resource |
+| [aws_kms_alias.rsm](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_alias)             | resource |
+| [aws_kms_replica_key.rsm](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_replica_key) | resource |
+| [sops_file.rsm](https://registry.terraform.io/providers/carlpett/sops/latest/docs/data-sources/file)                   | resource |
 
 
 ## Available Inputs
-
-| Name                | Resource    |  Variable                  | Data Type    | Default             | Required?
-| --------------------| ------------|----------------------------| -------------|---------------------|----------
-| Alias               |aws_kms_alias| `alias`                    | `string`     | `""`                | No
-| Description         | aws_kms_key | `description`              | `string`     | `""`                | No
-| Deletion Window     | aws_kms_key | `deletion_window_in_days`  | `number`     | `7`                 | No
-| Enable Key Rotation | aws_kms_key | `enable_key_rotation`      | `bool`       | `false`             | No
-| Key Usage           | aws_kms_key | `key_usage`                | `string`     | `ENCRYPT_DECRYPT`   | No
-| Key Spec            | aws_kms_key | `customer_master_key_spec` | `string`     | `SYMMETRIC_DEFAULT` | No
-| Multi-Region        | aws_kms_key | `multi_region`             | `bool`       | `false`             | No
-| Policy              | aws_kms_key | `policy`                   | `string`     | `""`                | No
-| Tags                | aws_kms_key | `tags`                     | `map(string)`| `""`                | No
-| Local SOPS File     | sops_file   | `sops_file`                | `string`     | `""`                | Yes
-| Enable SOPS File    | sops_file   | `enable_sops`              | `string`     | `true`              | No
+| Name                  | Resource            | Variable                                     | Data Type    | Default             | Required?
+| --------------------- | ------------------- |--------------------------------------------- | -------------|---------------------|----------
+| Alias                 | aws_kms_alias       | `alias`                                      | `string`     | `null`              | No
+| Description           | aws_kms_key         | `description`                                | `string`     | `null`              | No
+| Deletion Window       | aws_kms_key         | `deletion_window_in_days`                    | `number`     | `7`                 | No
+| Enable Key Rotation   | aws_kms_key         | `enable_key_rotation`                        | `bool`       | `false`             | No
+| Key Usage             | aws_kms_key         | `key_usage`                                  | `string`     | `ENCRYPT_DECRYPT`   | No
+| Bypass Policy Lockout | aws_kms_key         | `bypass_policy_lockout_safety_check`         | `bool`       | `false`             | No
+| Key Spec              | aws_kms_key         | `customer_master_key_spec`                   | `string`     | `SYMMETRIC_DEFAULT` | No
+| Multi-Region          | aws_kms_key         | `multi_region`                               | `bool`       | `false`             | No
+| Policy                | aws_kms_key         | `policy`                                     | `string`     | `null`              | No
+| Tags                  | aws_kms_key         | `tags`                                       | `map(string)`| `null`              | No
+| Replica Enabled       | aws_kms_replica_key | `replica_is_enabled`                         | `map(string)`| `false`             | No
+| Description           | aws_kms_replica_key | `replica_description`                        | `string`     | `null`              | No
+| Deletion Window       | aws_kms_replica_key | `replica_deletion_window_in_days`            | `number`     | `7`                 | No
+| Enable Key Rotation   | aws_kms_replica_key | `enable_key_rotation`                        | `bool`       | `false`             | No
+| Bypass Policy Lockout | aws_kms_replica_key | `replica_bypass_policy_lockout_safety_check` | `bool`       | `false`             | No
+| Primary Key Arn       | aws_kms_replica_key | `primary_key_arn`                            | `map(string)`| `null`              | Yes
+| Replica Policy        | aws_kms_replica_key | `replica_policy`                             | `map(string)`| `null`              | No
+| Create Primary SOPS   | local_file          | `create_sops_primary`                        | `string`     | `false`             | No
+| Create Replica SOPS   | local_file          | `create_sops_replica`                        | `string`     | `false`             | No
+| SOPS File Path        | local_file          | `sops_file`                                  | `string`     | `null`              | No
 
 ## Predetermined Inputs
-
 | Name                | Resource    |  Property                 | Data Type    | Default                 | Required?
 | --------------------| ------------|---------------------------| -------------|-------------------------|----------
 | Target KMS Key Id   |aws_kms_alias| `target_key_id`           | `string`     |`aws_kms_key.this.key.id`| Yes
@@ -170,9 +158,11 @@ inputs = {
 | SOPS File Permission| sops_file   | `file_permission`         | `string`     | `0600`                  | Yes
 
 ## Outputs
-
-| Name      | Description                      |
-|-----------|----------------------------------|
-| CMK Arn   | Arn of the customer managed key. |
-| CMK Id    | Id of the customer managed key.  |
-| SOPS File | Contents of the SOPS file.       |
+| Name                      | Description                                |
+|-------------------------- | ------------------------------------------ |
+| Primary KMS Key Arn       | Arn of the primary KMS key.                |
+| Primary KMS Key Id        | Id of the primary KMS key.                 |
+| Primary KMS Key SOPS File | Contents of the primary kms key SOPS file. |
+| Replica KMS Key Arn       | Arn of the replica KMS key.                |
+| Replica KMS Key Id        | Id of the replica KMS key.                 |
+| Replica KMS Key SOPS File | Contents of the replica kms key SOPS file. |

@@ -66,7 +66,7 @@ module "replica-kms" {
 
   replica_is_enabled                         = true
   replica_description                        = "Used for managing devops-maintained encrypted data."
-  replica_deletion_window_in_days            = 1
+  replica_deletion_window_in_days            = 7
   replica_bypass_policy_lockout_safety_check = false
   primary_key_arn                            = "arn:aws:kms:us-east-1:111111111111:key/mrk-a111a111aaaa111111111111aaa1aaaa"
 
@@ -90,7 +90,7 @@ module "complete-replica-kms-sops" {
 
   replica_is_enabled                         = true
   replica_description                        = "Used for managing devops-maintained encrypted data."
-  replica_deletion_window_in_days            = 1
+  replica_deletion_window_in_days            = 7
   replica_bypass_policy_lockout_safety_check = false
   primary_key_arn                            = "arn:aws:kms:us-east-1:111111111111:key/mrk-a111a111aaaa111111111111aaa1aaaa"
 
@@ -116,7 +116,7 @@ module "complete-replica-kms-sops" {
 module "primary-kms-sops" {
   replica_is_enabled                         = true
   replica_description                        = "Used for managing devops-maintained encrypted data."
-  replica_deletion_window_in_days            = 1
+  replica_deletion_window_in_days            = 7
   replica_bypass_policy_lockout_safety_check = false
   primary_key_arn                            = "arn:aws:kms:us-east-1:111111111111:key/mrk-a111a111aaaa111111111111aaa1aaaa"
 

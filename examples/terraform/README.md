@@ -29,7 +29,7 @@ module "primary-kms" {
 ## Complete Terraform Example (Primary KMS + SOPS)
 
 ```
-module "primary-kms-sops" {
+module "complete-primary-kms-sops" {
   source = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.1.6"
 
   is_enabled                         = true
@@ -61,7 +61,7 @@ module "primary-kms-sops" {
 ## Basic Terraform Example (Replica KMS Only)
 
 ```
-module "primary-kms-sops" {
+module "replica-kms" {
   source = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.1.6"
 
   replica_is_enabled                         = true
@@ -85,8 +85,8 @@ module "primary-kms-sops" {
 ## Complete Terraform Example (Replica KMS + SOPS)
 
 ```
-module "primary-kms-sops" {
-source = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.1.6"
+module "complete-replica-kms-sops" {
+  source = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.1.6"
 
   replica_is_enabled                         = true
   replica_description                        = "Used for managing devops-maintained encrypted data."

@@ -2,6 +2,8 @@
 
 ```
 module "primary-kms" {
+  source = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.1.6"
+ 
   is_enabled                         = true
   name                               = "alias/devops"
   description                        = "Used for managing devops-maintained encrypted data."
@@ -28,6 +30,8 @@ module "primary-kms" {
 
 ```
 module "primary-kms-sops" {
+  source = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.1.6"
+
   is_enabled                         = true
   name                               = "alias/devops"
   description                        = "Used for managing devops-maintained encrypted data."
@@ -58,6 +62,8 @@ module "primary-kms-sops" {
 
 ```
 module "primary-kms-sops" {
+  source = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.1.6"
+
   replica_is_enabled                         = true
   replica_description                        = "Used for managing devops-maintained encrypted data."
   replica_deletion_window_in_days            = 1
@@ -80,6 +86,8 @@ module "primary-kms-sops" {
 
 ```
 module "primary-kms-sops" {
+source = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.1.6"
+
   replica_is_enabled                         = true
   replica_description                        = "Used for managing devops-maintained encrypted data."
   replica_deletion_window_in_days            = 1

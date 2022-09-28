@@ -23,9 +23,9 @@ resource "aws_kms_alias" "this" {
 resource "local_file" "this" {
   count = var.enable_sops ? 1 : 0 && var.is_enabled ? 1 : 0
 
-  content         = <<EOF
+  content         = <<-EOF
 creation_rules:
-  - kms: ${aws_kms_key.this[count.index].arn}
+  - kms: #{aws_kms_key.this[0].arn}
 EOF
   filename        = var.sops_file
   file_permission = "0600"

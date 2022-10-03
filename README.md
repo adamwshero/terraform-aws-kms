@@ -10,7 +10,7 @@
 <br>
 # terraform-aws-kms
 
-Terraform module to create Amazon Customer Managed Key (CMK) including optional use with [Mozilla SOPS](https://github.com/mozilla/sops).
+Terraform module to create an Amazon KMS Key or Replica KMS key including optional integration with [Mozilla SOPS](https://github.com/mozilla/sops).
 
 [Amazon Key Management Service (KMS)](https://aws.amazon.com/kms/) makes it easy for you to create and manage cryptographic keys and control their use across a wide range of AWS services and in your applications. AWS KMS is a secure and resilient service that uses hardware security modules that have been validated under FIPS 140-2, or are in the process of being validated, to protect your keys. AWS KMS is integrated with AWS CloudTrail to provide you with logs of all key usage to help meet your regulatory and compliance needs.
 <br>
@@ -31,7 +31,7 @@ Look at our complete [Terraform examples](latest/examples/terraform/) where you 
 <br>
 
 ## Usage
-You can create a customer managed key (CMK) for use with the [Mozilla SOPS](https://github.com/mozilla/sops) tool. The module will create the CMK and gives you an option to also create a kms-sops.yaml for you to use with the SOPS tool for encrypting and decrypting files.
+You can create a primary KMS key or a replica of a multi-region primary KMS key for use with the [Mozilla SOPS](https://github.com/mozilla/sops) tool. The module will create the key and gives you an option to also create a kms-sops.yaml for you to use with the SOPS tool for encrypting and decrypting files.
 <br>
 
 ## Special Notes

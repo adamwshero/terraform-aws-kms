@@ -31,6 +31,22 @@ resource "aws_kms_replica_key" "this" {
   policy                             = var.replica_policy
 }
 
+resource "aws_kms_grant" "this" {
+  count = var.grant_is_enabled ? 1 : 0
+
+  name                = var.grant_name
+  key_id              = aws_kms_key.this[0].key_id
+  grantee_principal   = var.grantee_principal
+  operations          = var.operations
+  retiring_principal  = var.retiring_principal
+  retire_on_delete    = var.retire_on_delete
+  grant_creation_tokens   = var.grant_creation_tokens
+  constraints {
+      encryption_context_equals = var.encryption_context_equals
+      encryption_context_subset = var.encryption_context_subset
+    }
+}
+
 resource "local_file" "sops_primary" {
   count = var.enable_sops_primary ? 1 : 0 
 

@@ -19,6 +19,7 @@ Terraform module to create an Amazon KMS Key or Replica KMS key including option
 - (Optional) Create a primary KMS key in either single/multi-region.
 - (Optional) Create a replica KMS key in a different region of the primary multi-region KMS key.
 - (Optional) Create a corresponding SOPS file containing the primary KMS or replica KMS arn.
+- (Optional) Create a KMS Grant including encryption constraints.
 <br>
 
 ## Examples
@@ -46,7 +47,7 @@ You can create a primary KMS key or a replica of a multi-region primary KMS key 
 ### Terraform Example with optional SOPS file.
 ```
 module "primary-kms-sops" {
-  source = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.1.6"
+  source = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.2.0"
  
   is_enabled                         = true
   name                               = "alias/devops"
@@ -67,9 +68,22 @@ module "primary-kms-sops" {
   enable_sops_primary = true
   sops_file           = "${get_terragrunt_dir()}/.sops.yaml"
 
+  // KMS Grants
+  grant_is_enabled      = true
+  grant_name            = "test-grant"
+  grantee_principal     = local.sso_administrator_role_arn
+  retiring_principal    = local.sso_administrator_role_arn
+  operations            = ["Encrypt", "Decrypt", "GenerateDataKey"]
+  grant_creation_tokens = [base64encode("Token 1"), base64encode("Token 2")]
+  retire_on_delete      = true
+
+  encryption_context_equals = {
+    Department = "Platform Engineering"
+  }
+
   tags = {
     Environment        = local.env
-    Owner              = "DevOps"
+    Owner              = "Platform Engineering"
     CreatedByTerraform = true
   }
 }
@@ -79,7 +93,7 @@ module "primary-kms-sops" {
 
 ```
 terraform {
-  source = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.1.6"
+  source = "git@github.com:adamwshero/terraform-aws-kms.git//.?ref=1.2.0"
 }
 
 inputs = {
@@ -102,9 +116,22 @@ inputs = {
   enable_sops_primary = true
   sops_file           = "${get_terragrunt_dir()}/.sops.yaml"
 
+  // KMS Grants
+  grant_is_enabled      = true
+  grant_name            = "test-grant"
+  grantee_principal     = local.sso_administrator_role_arn
+  retiring_principal    = local.sso_administrator_role_arn
+  operations            = ["Encrypt", "Decrypt", "GenerateDataKey"]
+  grant_creation_tokens = [base64encode("Token 1"), base64encode("Token 2")]
+  retire_on_delete      = true
+
+  encryption_context_equals = {
+    Department = "Platform Engineering"
+  }
+
   tags = {
     Environment        = local.env.locals.env
-    Owner              = "DevOps"
+    Owner              = "Platform Engineering"
     CreatedByTerraform = true
   }
 }
@@ -129,6 +156,7 @@ inputs = {
 | [aws_kms_key.rsm](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key)                 | resource |
 | [aws_kms_alias.rsm](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_alias)             | resource |
 | [aws_kms_replica_key.rsm](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_replica_key) | resource |
+| [aws_kms_grant.rsm](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_grant)             | resource |
 | [sops_file.rsm](https://registry.terraform.io/providers/carlpett/sops/latest/docs/data-sources/file)                   | resource |
 
 
@@ -152,6 +180,15 @@ inputs = {
 | Bypass Policy Lockout | aws_kms_replica_key | `replica_bypass_policy_lockout_safety_check` | `bool`       | `false`             | No
 | Primary Key Arn       | aws_kms_replica_key | `primary_key_arn`                            | `map(string)`| `null`              | Yes
 | Replica Policy        | aws_kms_replica_key | `replica_policy`                             | `map(string)`| `null`              | No
+| Enable KMS Grant      | aws_kms_grant       | `grant_is_enabled`                           | `bool`       | `false`             | No
+| Grant Name            | aws_kms_grant       | `grant_name`                                 | `string`     | `null`              | No
+| Grantee Principal     | aws_kms_grant       | `grantee_principal`                          | `string`     | `null`              | No
+| Operations            | aws_kms_grant       | `operations`                                 | `list`       | `[]`                | No
+| Retiring Principal    | aws_kms_grant       | `retiring_principal`                         | `string`     | `null`              | No
+| Encryption Context    | aws_kms_grant       | `encryption_context_equals`                  | `map(string)`| `null`              | No
+| Encryption Context    | aws_kms_grant       | `encryption_context_subset`                  | `map(string)`| `null`              | No
+| Grant Tokens          | aws_kms_grant       | `grant_creation_tokens`                      | `list`       | `[]`                | No
+| Retire On Delete      | aws_kms_grant       | `retire_on_delete`                           | `bool`       | `false`             | No
 | Create Primary SOPS   | local_file          | `create_sops_primary`                        | `string`     | `false`             | No
 | Create Replica SOPS   | local_file          | `create_sops_replica`                        | `string`     | `false`             | No
 | SOPS File Path        | local_file          | `sops_file`                                  | `string`     | `null`              | No
@@ -171,4 +208,6 @@ inputs = {
 | Primary KMS Key SOPS File | Contents of the primary kms key SOPS file. |
 | Replica KMS Key Arn       | Arn of the replica KMS key.                |
 | Replica KMS Key Id        | Id of the replica KMS key.                 |
+| KMS Grant Id              | Id of the KMS key grant.                   |
+| KMS Grant Token           | Token of the KMS key grant. (sensitive)    |
 | Replica KMS Key SOPS File | Contents of the replica kms key SOPS file. |

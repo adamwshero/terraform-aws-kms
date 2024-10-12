@@ -128,3 +128,60 @@ variable "replica_policy" {
   type        = string
   default     = null
 }
+
+#################
+# KMS Grant Vars
+#################
+variable "grant_is_enabled" {
+  description = "(Optional) Specifies whether the grant is enabled. Defaults to false."
+  type        = bool
+  default     = false
+}
+
+variable "grant_name" {
+  description = "(Optional, Forces new resources) A friendly name for identifying the grant."
+  type        = string
+  default     = null
+}
+
+variable "grantee_principal" {
+  description = "(Optional, Forces new resources) The Arn of the IAM role you wish to use as the grantee."
+  type        = string
+  default     = null
+}
+
+variable "operations" {
+  description = "(Required, Forces new resources) A list of operations that the grant permits. The permitted values are: `Decrypt`, `Encrypt`, `GenerateDataKey`, `GenerateDataKeyWithoutPlaintext`, `ReEncryptFrom`, `ReEncryptTo`, `Sign`, `Verify`, `GetPublicKey`, `CreateGrant`, `RetireGrant`, `DescribeKey`, `GenerateDataKeyPair`, or `GenerateDataKeyPairWithoutPlaintext`."
+  type        = list
+  default     = []
+}
+
+variable "retiring_principal" {
+  description = "(Optional, Forces new resources) The principal that is given permission to retire the grant by using RetireGrant operation in ARN format. Note that due to eventual consistency issues around IAM principals, terraform's state may not always be refreshed to reflect what is true in AWS."
+  type        = string
+  default     = null
+}
+
+variable "encryption_context_equals" {
+  description = "(Optional, Forces new resources) A structure that you can use to allow certain operations in the grant only when the desired encryption context is present. "
+  type        = map(string)
+  default     = null
+}
+
+variable "encryption_context_subset" {
+  description = "(Optional, Forces new resources) A structure that you can use to allow certain operations in the grant only when the desired encryption context is present. "
+  type        = map(string)
+  default     = null
+}
+
+variable "grant_creation_tokens" {
+  description = "(Optional, Forces new resources) A list of grant tokens to be used when creating the grant."
+  type        = list
+  default     = []
+}
+
+variable "retire_on_delete" {
+  description = "(Defaults to false, Forces new resources) If set to false (the default) the grants will be revoked upon deletion, and if set to true the grants will try to be retired upon deletion. Note that retiring grants requires special permissions, hence why we default to revoking grants."
+  type        = bool
+  default     = false
+}

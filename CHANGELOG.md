@@ -1,4 +1,9 @@
-## 1.1.6 (September 28, 2022)
+## 1.2.0 (October 11, 2024)
+
+FEATURE:
+  * Add functionality to create KMS Grants
+
+## 1.2.0 (September 28, 2022)
 
 CHORE:
   * Simplified Terraform example for IAM policy
